@@ -1,0 +1,12 @@
+{
+    "name" : "orkestra/daemon",
+    "description" : "Run PHP scripts as a background daemon",
+    "require" : {
+        "php" : ">=5.3.2",
+        "ext-pcntl" : "*",
+        "ext-posix" : "*"
+    },
+    "autoload" : {
+        "psr-0" : { "Orkestra\\Common" : "lib/" }
+    }
+}
