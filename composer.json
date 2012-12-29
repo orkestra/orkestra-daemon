@@ -7,6 +7,6 @@
         "ext-posix" : "*"
     },
     "autoload" : {
-        "psr-0" : { "Orkestra\\Common" : "lib/" }
+        "psr-0" : { "Orkestra\\Daemon" : "lib/" }
     }
 }
