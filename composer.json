@@ -1,6 +1,7 @@
 {
     "name" : "orkestra/daemon",
     "description" : "Run PHP scripts as a background daemon",
+    "license" : "MIT",
     "require" : {
         "php" : ">=5.3.2",
         "ext-pcntl" : "*",
