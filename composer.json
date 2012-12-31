@@ -6,6 +6,10 @@
         "ext-pcntl" : "*",
         "ext-posix" : "*"
     },
+    "require-dev" : {
+        "ext-test_helpers" : "*",
+        "ext-runkit" : "*"
+    },
     "autoload" : {
         "psr-0" : { "Orkestra\\Daemon" : "lib/" }
     }
