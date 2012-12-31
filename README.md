@@ -1,6 +1,8 @@
 orkestra-daemon
 ===============
 
+[![Build Status](https://travis-ci.org/orkestra/orkestra-daemon.png?branch=master)](https://travis-ci.org/orkestra/orkestra-daemon)
+
 Daemonize your PHP scripts to accomplish work in the background.
 
 Note: This library requires that you install the Process Control and POSIX extensions.
