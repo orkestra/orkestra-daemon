@@ -132,6 +132,8 @@ class Daemon
             case SIGUSR1:
             case SIGUSR2:
                 $this->handleUserDefinedSignal($signal);
+
+                break;
         }
     }
 
@@ -203,7 +205,7 @@ class Daemon
             $this->pids[] = $pid;
         }
     }
-    
+
     /**
      * Cleans up any workers that have exited on their own
      *
@@ -215,8 +217,9 @@ class Daemon
             $status = 0;
             $pid = pcntl_waitpid(-1, $status, WNOHANG);
 
-            if ($pid <= 0)
+            if ($pid <= 0) {
                 break;
+            }
 
             unset($this->pids[array_search($pid, $this->pids)]);
         } while (true);
