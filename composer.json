@@ -1,0 +1,17 @@
+{
+    "name" : "orkestra/daemon",
+    "description" : "Run PHP scripts as a background daemon",
+    "license" : "MIT",
+    "require" : {
+        "php" : ">=5.3.2",
+        "ext-pcntl" : "*",
+        "ext-posix" : "*"
+    },
+    "require-dev" : {
+        "ext-test_helpers" : "*",
+        "ext-runkit" : "*"
+    },
+    "autoload" : {
+        "psr-0" : { "Orkestra\\Daemon" : "lib/" }
+    }
+}
