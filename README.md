@@ -29,7 +29,7 @@ Then run `composer install` or `composer update`.
 Usage
 -----
 
-Currently, a worker must be a valid executable accepted by `pcntl_exec`.
+Spawning a new worker process using `pcntl_exec`:
 
 ``` php
 <?php
@@ -41,6 +41,26 @@ use Orkestra\Daemon\Worker\PcntlWorker;
 
 $daemon = new Daemon();
 $daemon->addWorker(new PcntlWorker('/path/to/executable', array('--arg=value')));
+
+$daemon->execute();
+```
+
+
+Spawning a worker processing using a Symfony Process:
+
+``` php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Orkestra\Daemon\Daemon;
+use Orkestra\Daemon\Worker\ProcessWorker;
+use Symfony\Component\Process\Process;
+
+$process = new Process('/path/to/executable --arg=value');
+
+$daemon = new Daemon();
+$daemon->addWorker(new ProcessWorker($process));
 
 $daemon->execute();
 ```
