@@ -37,9 +37,10 @@ Currently, a worker must be a valid executable accepted by `pcntl_exec`.
 require __DIR__ . '/vendor/autoload.php';
 
 use Orkestra\Daemon\Daemon;
+use Orkestra\Daemon\Worker\PcntlWorker;
 
 $daemon = new Daemon();
-$daemon->addWorker('/path/to/executable');
+$daemon->addWorker(new PcntlWorker('/path/to/executable', array('--arg=value')));
 
 $daemon->execute();
 ```
