@@ -17,6 +17,16 @@ namespace Orkestra\Daemon\Worker;
 class PcntlWorker implements WorkerInterface
 {
     /**
+     * @var string
+     */
+    private $path;
+
+    /**
+     * @var array
+     */
+    private $arguments;
+
+    /**
      * Constructor
      *
      * @param string  $path       The path to the executable
