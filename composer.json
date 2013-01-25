@@ -9,7 +9,11 @@
     },
     "require-dev" : {
         "ext-test_helpers" : "*",
-        "ext-runkit" : "*"
+        "ext-runkit" : "*",
+        "symfony/process" : "2.1.*"
+    },
+    "suggest" : {
+        "symfony/process" : "To enable daemonizing Symfony Processes"
     },
     "autoload" : {
         "psr-0" : {
