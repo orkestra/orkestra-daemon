@@ -27,7 +27,7 @@ class Daemon
     protected $pids = array();
 
     /**
-     * @var array An array of executable worker scripts
+     * @var array|Worker\WorkerInterface[] An array of executable worker scripts
      */
     protected $workers = array();
 
@@ -60,12 +60,11 @@ class Daemon
      *
      * A worker must be a valid executable
      *
-     * @param string $worker    Path to 'work'
-     * @param array  $arguments
+     * @param \Orkestra\Daemon\Worker\WorkerInterface $worker Path to 'work'
      */
-    public function addWorker($worker, $arguments = array())
+    public function addWorker(Worker\WorkerInterface $worker)
     {
-        $this->workers[] = array($worker, (array) $arguments);
+        $this->workers[] = $worker;
     }
 
     /**
@@ -190,7 +189,7 @@ class Daemon
     /**
      * Gets the next available worker
      *
-     * @return array|null Array of command, arguments or null if no more workers
+     * @return Worker\WorkerInterface|null The next worker or null if no more workers
      */
     protected function getNextWorker()
     {
@@ -205,11 +204,11 @@ class Daemon
     protected function spawnWorker()
     {
         $pid = pcntl_fork();
-        list($worker, $arguments) = $this->getNextWorker();
+        $worker = $this->getNextWorker();
 
         if (!$pid) {
             // New worker process
-            pcntl_exec($worker, $arguments);
+            $worker->execute();
         } else {
             $this->pids[] = $pid;
         }

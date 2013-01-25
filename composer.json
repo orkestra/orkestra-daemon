@@ -12,6 +12,9 @@
         "ext-runkit" : "*"
     },
     "autoload" : {
-        "psr-0" : { "Orkestra\\Daemon" : "lib/" }
+        "psr-0" : {
+            "Orkestra\\Daemon\\Tests" : "tests/",
+            "Orkestra\\Daemon" : "lib/"
+        }
     }
 }

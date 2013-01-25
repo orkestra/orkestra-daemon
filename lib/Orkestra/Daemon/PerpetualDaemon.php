@@ -37,20 +37,17 @@ class PerpetualDaemon extends Daemon
      *
      * The PerpetualDaemon may only be assigned a single worker
      *
-     * @param $worker
-     * @param array $arguments
-     *
-     * @see Orkestra\Common\Daemon\Daemon::addWorker
+     * @param \Orkestra\Daemon\Worker\WorkerInterface $worker
      *
      * @throws \RuntimeException if a worker is already assigned
      */
-    public function addWorker($worker, $arguments = array())
+    public function addWorker(Worker\WorkerInterface $worker)
     {
         if (!empty($this->workers)) {
             throw new \RuntimeException('The PerpetualDaemon may only be assigned one worker');
         }
 
-        parent::addWorker($worker, $arguments);
+        parent::addWorker($worker);
     }
 
     /**
@@ -62,7 +59,7 @@ class PerpetualDaemon extends Daemon
     }
 
     /**
-     * @return array|null
+     * @return Worker\WorkerInterface|null
      */
     protected function getNextWorker()
     {

@@ -22,7 +22,7 @@ use Orkestra\Daemon\Daemon;
  * @group orkestra
  * @group daemon
  */
-class DaemonTest extends \PHPUnit_Framework_TestCase
+class DaemonTest extends RunkitEnabledTestCase
 {
     /**
      * Contains call counts
@@ -40,11 +40,7 @@ class DaemonTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        if (!extension_loaded('test_helpers')) {
-            $this->markTestSkipped('These unit tests require ext/test_helpers. See https://github.com/sebastianbergmann/php-test-helpers for more info.');
-        } elseif (!extension_loaded('runkit')) {
-            $this->markTestSkipped('These unit tests require ext/runkit. See https://github.com/zenovich/runkit/ for more info.');
-        }
+        parent::setUp();
 
         set_exit_overload(array(__CLASS__, '__exit_overload'));
 
@@ -68,11 +64,20 @@ class DaemonTest extends \PHPUnit_Framework_TestCase
     {
         $resetPcntlFork    = $this->redefineFunction('pcntl_fork',    '',              __CLASS__ . '::__pcntl_fork_overload();');
         $resetPcntlWaitpid = $this->redefineFunction('pcntl_waitpid', '',              __CLASS__ . '::__pcntl_waitpid_overload();');
-        $resetPcntlExec    = $this->redefineFunction('pcntl_exec',    '$worker,$args', __CLASS__ . '::__pcntl_exec_overload($worker, $args);');
+
+        $firstWorker = $this->getMockForAbstractClass('Orkestra\Daemon\Worker\WorkerInterface');
+        $firstWorker->expects($this->once())
+            ->method('execute')
+            ->will($this->returnCallback(__CLASS__ . '::__workerExecute'));
+
+        $secondWorker = $this->getMockForAbstractClass('Orkestra\Daemon\Worker\WorkerInterface');
+        $secondWorker->expects($this->once())
+            ->method('execute')
+            ->will($this->returnCallback(__CLASS__ . '::__workerExecute'));
 
         $daemon = new Daemon();
-        $daemon->addWorker('first', array('arg' => 'test'));
-        $daemon->addWorker('second');
+        $daemon->addWorker($firstWorker);
+        $daemon->addWorker($secondWorker);
 
         $daemon->init();
 
@@ -84,17 +89,10 @@ class DaemonTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, static::$calls['usleep']);
         $this->assertEquals(3, static::$calls['pcntl_fork']);
         $this->assertEquals(2, static::$calls['pcntl_waitpid']);
-        $this->assertEquals(2, static::$calls['pcntl_exec']);
-
-        $this->assertCount(2, static::$calls['workers']);
-        $this->assertArrayHasKey('first', static::$calls['workers']);
-        $this->assertArrayHasKey('second', static::$calls['workers']);
-        $this->assertEquals(array('arg' => 'test'),  static::$calls['workers']['first']);
-        $this->assertEquals(array(), static::$calls['workers']['second']);
+        $this->assertEquals(2, static::$calls['workers']);
 
         $resetPcntlFork();
         $resetPcntlWaitpid();
-        $resetPcntlExec();
     }
 
     public static function __exit_overload()
@@ -121,10 +119,9 @@ class DaemonTest extends \PHPUnit_Framework_TestCase
         return 0;
     }
 
-    public static function __pcntl_exec_overload($worker, $args)
+    public static function __workerExecute()
     {
-        static::$calls['pcntl_exec']++;
-        static::$calls['workers'][$worker] = $args;
+        static::$calls['workers']++;
     }
 
     protected function resetCallCounts()
@@ -133,32 +130,8 @@ class DaemonTest extends \PHPUnit_Framework_TestCase
             'usleep' => 0,
             'pcntl_fork' => 0,
             'pcntl_waitpid' => 0,
-            'pcntl_exec' => 0,
             'exit' => 0,
-            'workers' => array()
+            'workers' => 0
         );
-    }
-
-    /**
-     * Overrides a function, returning a callable that will reset the environment when called
-     *
-     * @see runkit_function_redefine
-     *
-     * @param string $funcname
-     * @param string $arglist
-     * @param string $code
-     *
-     * @return callable A callable to reset everything back to normal
-     */
-    protected function redefineFunction($funcname, $arglist, $code)
-    {
-        runkit_function_copy($funcname, '__backup_' . $funcname);
-        runkit_function_redefine($funcname, $arglist, $code);
-
-        return function() use($funcname) {
-            runkit_function_remove($funcname);
-            runkit_function_copy('__backup_' . $funcname, $funcname);
-            runkit_function_remove('__backup_' . $funcname);
-        };
     }
 }
